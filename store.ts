@@ -16,7 +16,7 @@ const DEFAULT_SERVICES: Service[] = [
     price: 599, 
     duration: 45, 
     description: 'Expert scissors and clipper work for a sharp, modern look tailored to your personality.',
-    image: 'https://images.unsplash.com/photo-1599351431247-f5793384797d?auto=format&fit=crop&q=80&w=800'
+    image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&q=80&w=800'
   },
   { 
     id: '2', 
@@ -24,7 +24,7 @@ const DEFAULT_SERVICES: Service[] = [
     price: 349, 
     duration: 30, 
     description: 'Complete beard grooming with straight razor edging and premium sandalwood oil finish.',
-    image: 'https://images.unsplash.com/photo-1621605815841-aa88c82b028c?auto=format&fit=crop&q=80&w=800'
+    image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=800'
   },
   { 
     id: '3', 
@@ -32,7 +32,7 @@ const DEFAULT_SERVICES: Service[] = [
     price: 1499, 
     duration: 60, 
     description: 'Deep cleansing and hydration treatment using luxury organic extracts for a glowing complexion.',
-    image: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&q=80&w=800'
+    image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&q=80&w=800'
   },
   { 
     id: '4', 
@@ -40,7 +40,7 @@ const DEFAULT_SERVICES: Service[] = [
     price: 1899, 
     duration: 75, 
     description: 'Intensive scalp therapy and steam treatment to repair damage and promote healthy growth.',
-    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=800'
+    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=800'
   },
   { 
     id: '5', 
@@ -56,7 +56,7 @@ const DEFAULT_SERVICES: Service[] = [
     price: 899, 
     duration: 45, 
     description: 'Red-carpet ready blowouts and intricate up-dos for your most special occasions.',
-    image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=800'
+    image: 'https://images.unsplash.com/photo-1595476108010-b4d1f80d77d2?auto=format&fit=crop&q=80&w=800'
   },
 ];
 
@@ -73,9 +73,26 @@ const DEFAULT_USERS: User[] = [
 
 export const db = {
   init: () => {
+    // If services don't exist, create them
     if (!localStorage.getItem(STORAGE_KEYS.SERVICES)) {
       localStorage.setItem(STORAGE_KEYS.SERVICES, JSON.stringify(DEFAULT_SERVICES));
+    } else {
+      // Force update specific images if they match old broken URLs to ensure users see the fix
+      const currentServices = JSON.parse(localStorage.getItem(STORAGE_KEYS.SERVICES) || '[]');
+      let updated = false;
+      const newServices = currentServices.map((s: Service) => {
+        const defaultMatch = DEFAULT_SERVICES.find(ds => ds.id === s.id);
+        if (defaultMatch && (s.image.includes('599351431247') || s.image.includes('1621605815841'))) {
+          updated = true;
+          return { ...s, image: defaultMatch.image };
+        }
+        return s;
+      });
+      if (updated) {
+        localStorage.setItem(STORAGE_KEYS.SERVICES, JSON.stringify(newServices));
+      }
     }
+
     if (!localStorage.getItem(STORAGE_KEYS.STYLISTS)) {
       localStorage.setItem(STORAGE_KEYS.STYLISTS, JSON.stringify(DEFAULT_STYLISTS));
     }
